@@ -42,10 +42,8 @@ class controlador {
     }
 
     static async cadastrarUsuario(req, res) {
-        //está sendo passado a chave e com base nisso o valor é retirado independente da ordem
-        //adicionar validação de regex no 
         const {name, email, password, confirmPassword} = req.body 
-        res.status(201).send("Usuario cadastrado com sucesso: " + await Services.cadastrarUsuario(name, email, password, confirmPassword))
+        res.status(201).send("Usuario cadastrado com sucesso: " + await Services.cadastrarUsuario(name, email, password, confirmPassword, res))
     }
 
     static async loginUser(req, res) {

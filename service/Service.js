@@ -5,26 +5,26 @@ import {scryptSync} from "crypto"
 import { timingSafeEqual } from "crypto";
 
 export default class Services {
-    static async listaLivros(idUserToken) {
+    static async listaLivros(idUserToken, res) {
         const idUser = jsonwebtoken.verify(idUserToken, process.env.CHAVE_TOKEN).id
         const collection = criaColecaoUser(idUser)
         return await collection.find()
     }
 
-    static async salvarLivro(idUserToken, contentLivro) {
+    static async salvarLivro(idUserToken, contentLivro, res) {
         const idUser = jsonwebtoken.verify(idUserToken, process.env.CHAVE_TOKEN).id
-        const collection = criaColecaoUser(idUser) //  || mongoose.models.idUser
+        const collection = criaColecaoUser(idUser) 
         let livro = new collection(contentLivro);
         return await livro.save()
     }
 
-    static async removeLivro(idUserToken, idLivro) {
+    static async removeLivro(idUserToken, idLivro, res) {
         const idUser = jsonwebtoken.verify(idUserToken, process.env.CHAVE_TOKEN).id
         const collection = criaColecaoUser(idUser)
         return await collection.findByIdAndRemove(idLivro)
     }
 
-    static async filtrarLivro(idUserToken, query) {
+    static async filtrarLivro(idUserToken, query, res) {
         const idUser = jsonwebtoken.verify(idUserToken, process.env.CHAVE_TOKEN).id
         const collection = criaColecaoUser(idUser)
         let expressao = new RegExp(query, "i")
@@ -39,7 +39,13 @@ export default class Services {
         return await collection.findOneAndUpdate({_id: idLivro}, atualizacoes)
     }
 
-    static async cadastrarUsuario(name, email, password, confirmPassword) {
+    static async cadastrarUsuario(name, email, password, confirmPassword, res) {
+        let padraoEmail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, "i")
+        
+        if (!padraoEmail.test(email)) {
+            return res.status(422).json({msg: "Insira um email válido"})
+        }
+        
         if (!name) {
             return res.status(422).json({ msg: "O nome é obrigatório!" });
         }
